@@ -25,8 +25,7 @@ module.exports = function(app, appData) {
                 console.error(err.message);
                 res.redirect('./register');
             } else if (result.length > 0){
-                let newData = Object.assign({}, appData, { error: "Username or email already exists. Please try again." });
-                res.render('register.ejs', newData);
+                res.render('register.ejs', Object.assign({}, appData, { error: "Username or email already exists. Please try again." }));
             } else{
                 bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
                     if (err) {
@@ -42,16 +41,13 @@ module.exports = function(app, appData) {
                                 res.redirect('./');
                             }
                             else {
-                                res.redirect('./');
+                                res.render('register.ejs', Object.assign({}, appData, { success: "Registration successful!" }));
                             }
                         })
                     }
                   })
             }
         })
-
-
-          
     }); 
 
     app.get('/login',function(req,res){

@@ -13,9 +13,12 @@
     <h3>Register an account:</h3>
 
     <div class="form-container">
-        
+
         <% if (typeof error !== 'undefined' && error) { %>
             <p class="error-message"><%= error %></p>
+        <% } %>
+        <% if (typeof success !== 'undefined' && success) { %>
+            <p class="success-message"><%= success %></p>
         <% } %>
 
         <form method="POST" action="/registered">
