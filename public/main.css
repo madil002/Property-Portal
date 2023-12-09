@@ -105,3 +105,9 @@ a:active {
 .back-button {
     text-align: right;
 }
+
+.error-message {
+    color: red;
+    font-weight: bold;
+    margin: 10px 0;
+}
