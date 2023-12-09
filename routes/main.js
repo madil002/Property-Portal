@@ -12,4 +12,8 @@ module.exports = function(app, appData) {
     app.get('/register',function(req,res){
         res.render('register.ejs', appData)
     });
+
+    app.get('/login',function(req,res){
+        res.render('login.ejs', appData)
+    });
 }
