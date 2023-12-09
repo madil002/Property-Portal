@@ -5,7 +5,7 @@ h1 {
     text-align: center;
 }
 
-p,li {
+p,li,a {
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
 }
@@ -42,4 +42,9 @@ a:active {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px; 
+}
+
+.link-container {
+    text-align: center;
+    margin-top: 5px;
 }
