@@ -4,3 +4,36 @@ h1 {
     color: darkcyan;
     text-align: center;
 }
+
+p,li {
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+
+a:link {
+    color: orangered;
+    text-decoration: none;
+    padding: 5px;
+}
+
+/* visited link */
+a:visited {
+    color: tomato;
+    text-decoration: none;
+    padding: 5px;
+}
+
+/* mouse over link */
+a:hover {
+    color: white;
+    text-decoration: none;
+    background-color: orangered;
+    padding: 5px;
+}
+
+/* selected link */
+a:active {
+    color: blue;
+    text-decoration: none;
+    padding: 5px;
+}
