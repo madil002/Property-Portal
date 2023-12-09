@@ -83,6 +83,11 @@ a:active {
     border-radius: 4px;
 }
 
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
 .submit-button {
     background-color: #4CAF50;
     color: white;
@@ -95,4 +100,8 @@ a:active {
 
 .submit-button:hover {
     background-color: #45a049;
+}
+
+.back-button {
+    text-align: right;
 }
