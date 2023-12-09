@@ -3,6 +3,14 @@ const saltRounds = 10;
 
 module.exports = function(app, appData) {
 
+    const redirectLogin = (req, res , next) => {
+        if (!req.session.userId){
+            res.redirect('/login')
+        }else{
+            next();
+        }
+    }
+
     // Routes
     app.get('/',function(req,res){
         res.render('index.ejs', appData)
@@ -16,6 +24,7 @@ module.exports = function(app, appData) {
         res.render('register.ejs', appData)
     });
 
+    //Need to add server side validation for the form fields
     app.post('/registered', function (req,res) {
         const plainPassword = req.body.password;
 
@@ -80,10 +89,25 @@ module.exports = function(app, appData) {
                         res.render('login.ejs', Object.assign({}, appData, { error: "Invalid password." }));
                     }
                     else if (result == true){
+                        req.session.userId = username;
                         res.render('login.ejs', Object.assign({}, appData, { success: "Successfully Logged in! " }));
                     }
                 })
             }
         })
     })
+
+    app.get('/loggedout', redirectLogin, function (req, res) {
+        req.session.destroy(err => {
+            if (err) {
+                return res.redirect('./')
+            }
+            res.send('you are now logged out. <a href=' + './' + '>Home</a>');
+        })
+
+    })
+
+    app.get('/dashboard', redirectLogin, function(req,res){
+        res.send("Placeholder");
+    });
 }
