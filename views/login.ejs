@@ -13,7 +13,15 @@
     <h3>Login to your account:</h3>
 
     <div class="form-container">
-        <form method="POST" action="/">
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <p class="error-message"><%= error %></p>
+        <% } %>
+        <% if (typeof success !== 'undefined' && success) { %>
+            <p class="success-message"><%= success %></p>
+        <% } %>
+        
+        <form method="POST" action="/loggedin">
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input id="username" type="text" name="username" value="" />

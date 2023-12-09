@@ -53,4 +53,37 @@ module.exports = function(app, appData) {
     app.get('/login',function(req,res){
         res.render('login.ejs', appData)
     });
+
+    app.post('/loggedin',function(req,res){
+        // Need to add:
+        // if logged in already redirect to dashboard
+        // direct to dashboard after successful login
+        let username = req.body.username;
+        let password = req.body.password;
+
+        db.query(`SELECT hashed_password FROM users WHERE username = '${username}'`, (err, result) => {
+            if (err){
+                console.error(err.message);
+                res.redirect('/login');
+            }
+            else if (result.length == 0) {
+                res.render('login.ejs', Object.assign({}, appData, { error: "Invalid user" }));
+            }
+            else {
+                let hashedPassword = result[0].hashed_password
+                bcrypt.compare(password, hashedPassword, function (err, result){
+                    if (err){
+                        console.error(err.message);
+                        res.redirect('/login');
+                    }
+                    else if (result == false){
+                        res.render('login.ejs', Object.assign({}, appData, { error: "Invalid password." }));
+                    }
+                    else if (result == true){
+                        res.render('login.ejs', Object.assign({}, appData, { success: "Successfully Logged in! " }));
+                    }
+                })
+            }
+        })
+    })
 }
