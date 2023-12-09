@@ -20,13 +20,13 @@
         <% if (typeof success !== 'undefined' && success) { %>
             <p class="success-message"><%= success %></p>
         <% } %>
-        
+
         <form method="POST" action="/loggedin">
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input id="username" type="text" name="username" value="" />
+                <input id="username" type="text" name="username" required />
                 <label for="password">Password:</label>
-                <input id="password" type="password" name="password" value="" />
+                <input id="password" type="password" name="password" required />
             </div>
             <div class="button-container">
                 <input type="submit" value="Login" class="submit-button" />
