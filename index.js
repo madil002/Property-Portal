@@ -2,6 +2,7 @@
 var express = require ('express')
 var ejs = require('ejs')
 var bodyParser= require ('body-parser')
+const mysql = require('mysql')
 
 // Create the express application object
 const app = express()
@@ -27,6 +28,22 @@ var appData = {appName: "Property Portal"}
 
 // Requires the main.js file inside the routes folder passing in the Express app and data as arguments.  All the routes will go in this file
 require("./routes/main")(app, appData);
+
+// Define the db connection
+const db = mysql.createConnection ({
+    host: 'localhost',
+    user: 'appuser',
+    password: 'app2027',
+    database: 'PropertyPortal'
+});
+// Connect to the db
+db.connect((err) => {
+    if(err) {
+        throw err;
+    }
+    console.log('Connected to db');
+})
+global.db = db;
 
 // Start the web app listening
 app.listen(port, () => console.log(`App listening on port ${port}!`))
