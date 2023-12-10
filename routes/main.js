@@ -111,4 +111,17 @@ module.exports = function(app, appData) {
     app.get('/dashboard', redirectLogin, function(req,res){
         res.send("Placeholder");
     });
+
+    app.get('/properties', function(req,res){
+        let sqlquery = "SELECT * FROM properties";
+        
+        db.query(sqlquery, function (err, result) {
+            if (err) {
+                console.error(err.message);
+                res.redirect("./"); //NEED TO REVAMP
+            } else {
+                res.render('properties.ejs', Object.assign({}, appData, { properties: result}));
+            }
+        })
+    });
 }
