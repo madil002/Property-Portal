@@ -1,42 +1,42 @@
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
-module.exports = function(app, appData) {
+module.exports = function (app, appData) {
 
-    const redirectLogin = (req, res , next) => {
-        if (!req.session.userId){
+    const redirectLogin = (req, res, next) => {
+        if (!req.session.userId) {
             res.redirect('/login')
-        }else{
+        } else {
             next();
         }
     }
 
     // Routes
-    app.get('/',function(req,res){
+    app.get('/', function (req, res) {
         res.render('index.ejs', appData)
     });
 
-    app.get('/about',function(req,res){
+    app.get('/about', function (req, res) {
         res.render('about.ejs', appData)
     });
 
-    app.get('/register',function(req,res){
+    app.get('/register', function (req, res) {
         res.render('register.ejs', appData)
     });
 
     //Need to add server side validation for the form fields
-    app.post('/registered', function (req,res) {
+    app.post('/registered', function (req, res) {
         const plainPassword = req.body.password;
 
         let checkForDupe = "SELECT * FROM users WHERE username = ? OR email = ?";
-        db.query(checkForDupe, [req.body.username, req.body.email], function(err, result){
+        db.query(checkForDupe, [req.body.username, req.body.email], function (err, result) {
             if (err) {
                 console.error(err.message);
                 res.redirect('./register');
-            } else if (result.length > 0){
+            } else if (result.length > 0) {
                 res.render('register.ejs', Object.assign({}, appData, { error: "Username or email already exists. Please try again." }));
-            } else{
-                bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
+            } else {
+                bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
                     if (err) {
                         console.error(err.message);
                         res.redirect('./register');
@@ -54,16 +54,16 @@ module.exports = function(app, appData) {
                             }
                         })
                     }
-                  })
+                })
             }
         })
-    }); 
+    });
 
-    app.get('/login',function(req,res){
+    app.get('/login', function (req, res) {
         res.render('login.ejs', appData)
     });
 
-    app.post('/loggedin',function(req,res){
+    app.post('/loggedin', function (req, res) {
         // Need to add:
         // if logged in already redirect to dashboard
         // direct to dashboard after successful login
@@ -71,7 +71,7 @@ module.exports = function(app, appData) {
         let password = req.body.password;
 
         db.query(`SELECT hashed_password FROM users WHERE username = '${username}'`, (err, result) => {
-            if (err){
+            if (err) {
                 console.error(err.message);
                 res.redirect('/login');
             }
@@ -80,15 +80,15 @@ module.exports = function(app, appData) {
             }
             else {
                 let hashedPassword = result[0].hashed_password
-                bcrypt.compare(password, hashedPassword, function (err, result){
-                    if (err){
+                bcrypt.compare(password, hashedPassword, function (err, result) {
+                    if (err) {
                         console.error(err.message);
                         res.redirect('/login');
                     }
-                    else if (result == false){
+                    else if (result == false) {
                         res.render('login.ejs', Object.assign({}, appData, { error: "Invalid password." }));
                     }
-                    else if (result == true){
+                    else if (result == true) {
                         req.session.userId = username;
                         res.render('login.ejs', Object.assign({}, appData, { success: "Successfully Logged in! " }));
                     }
@@ -108,27 +108,50 @@ module.exports = function(app, appData) {
 
     })
 
-    app.get('/dashboard', redirectLogin, function(req,res){
+    app.get('/dashboard', redirectLogin, function (req, res) {
         res.send("Placeholder");
     });
 
-    app.get('/properties', function(req,res){
+    app.get('/properties', function (req, res) {
         let sqlquery = "SELECT * from properties JOIN users ON properties.user_id = users.id";
-        
+
         db.query(sqlquery, function (err, result) {
             if (err) {
                 console.error(err.message);
                 res.redirect("./"); //NEED TO REVAMP
             } else {
-                res.render('properties.ejs', Object.assign({}, appData, { properties: result}));
+                res.render('properties.ejs', Object.assign({}, appData, { properties: result }));
             }
         })
     });
 
-    app.get('/search', function(req,res){
+    app.get('/search', function (req, res) {
         res.render("search.ejs", appData);
     });
-    app.get('/search-result', function(req,res){
-        res.send("placeholder")
+    app.get('/search-result', function (req, res) {
+        let type = req.query.type ? req.query.type : null;
+        let city = req.query.city ? req.query.city : null;
+        let price = req.query.price ? parseInt(req.query.price) : null;
+        let bedrooms = req.query.bedrooms ? parseInt(req.query.bedrooms) : null;
+        let bathrooms = req.query.bathrooms ? parseInt(req.query.bathrooms) : null;
+
+        let sqlquery = `SELECT * FROM properties JOIN users ON properties.user_id = users.id
+                    WHERE (? IS NULL OR type = ?) 
+                    AND (? IS NULL OR city LIKE ?) 
+                    AND (? IS NULL OR price <= ?) 
+                    AND (? IS NULL OR bedrooms >= ?) 
+                    AND (? IS NULL OR bathrooms >= ?)`;
+
+        db.query(sqlquery, [type, type, city, '%' + city + '%', price, price, bedrooms, bedrooms, bathrooms, bathrooms], function(err,result){
+            if (err) {
+                console.error(err.message);
+                res.redirect("./"); //NEED TO REVAMP
+            } else {
+                console.log("SQL Query:", sqlquery);
+                console.log("Parameters:", [type, type, city, '%' + city + '%', price, price, bedrooms, bedrooms, bathrooms, bathrooms]);
+                console.log(result);
+                res.render('properties.ejs', Object.assign({}, appData, { properties: result }));
+            }
+        })
     })
 }
