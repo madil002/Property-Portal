@@ -102,6 +102,7 @@ module.exports = function(app, appData) {
             if (err) {
                 return res.redirect('./')
             }
+            // Need to revamp this
             res.send('you are now logged out. <a href=' + './' + '>Home</a>');
         })
 
