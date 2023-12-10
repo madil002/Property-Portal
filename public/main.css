@@ -149,6 +149,8 @@ a:active {
     border-bottom-right-radius: 5px;
     width: 100px;
     flex-shrink: 0;
+    word-wrap: break-word;
+    font-size: 85%;
 }
 
 .property p {

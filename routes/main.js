@@ -113,7 +113,7 @@ module.exports = function(app, appData) {
     });
 
     app.get('/properties', function(req,res){
-        let sqlquery = "SELECT * FROM properties";
+        let sqlquery = "SELECT * from properties JOIN users ON properties.user_id = users.id";
         
         db.query(sqlquery, function (err, result) {
             if (err) {
