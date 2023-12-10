@@ -155,4 +155,8 @@ module.exports = function (app, appData) {
             }
         })
     })
+
+    app.get('/listproperty', redirectLogin, function (req, res) {
+        res.render("listproperty.ejs", appData);
+    });
 }

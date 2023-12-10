@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+
+<body>
+    <h1>
+        <%=appName%>
+    </h1>
+    <h3>List a property:</h3>
+
+    <div class="form-container">
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <p class="error-message"><%= error %></p>
+        <% } %>
+
+        <form method="POST" action="/add-property">
+            <div class="form-group">
+
+                <label for="price">Price:</label>
+                <input type="number" name="price" id="price" min="1"/>
+                
+                <label for="street">Street:</label>
+                <input type="text" name="street" id="street" />
+
+                <label for="city">City:</label>
+                <input type="text" name="city" id="city"/>
+
+                <label for="postcode">Postcode:</label>
+                <input type="text" name="postcode" id="postcode"/>
+
+                <label for="bedrooms">Bedrooms:</label>
+                <input type="number" name="bedrooms" id="bedrooms" min="1" />
+
+                <label for="bathrooms">Bathrooms:</label>
+                <input type="number" name="bathrooms" id="bathrooms" min="1" />
+
+                <label for="description">Description:</label>
+                <input type="text" name="description" id="description"/>
+
+                <label for="type">Type:</label>
+                <select name="type" id="type">
+                    <option value="House">House</option>
+                    <option value="Apartment">Apartment</option>
+                    <option value="Semi-Detached">Semi-Detached</option>
+                    <option value="Detached">Detached</option>
+                </select>
+
+            </div>
+
+            <div class="button-container">
+                <input type="submit" value="List" class="submit-button" />
+                <a href="/" class="back-button">Back</a>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
