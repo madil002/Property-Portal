@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Register</title>
+    <title>List</title>
     <link rel="stylesheet" type="text/css" href="/main.css" />
 </head>
 
@@ -17,30 +17,33 @@
         <% if (typeof error !== 'undefined' && error) { %>
             <p class="error-message"><%= error %></p>
         <% } %>
+        <% if (typeof success !== 'undefined' && success) { %>
+            <p class="success-message"><%= success %></p>
+        <% } %>
 
-        <form method="POST" action="/add-property">
+        <form method="POST" action="/property-added">
             <div class="form-group">
 
                 <label for="price">Price:</label>
-                <input type="number" name="price" id="price" min="1"/>
+                <input type="number" name="price" id="price" min="1" required/>
                 
                 <label for="street">Street:</label>
-                <input type="text" name="street" id="street" />
+                <input type="text" name="street" id="street" required/>
 
                 <label for="city">City:</label>
-                <input type="text" name="city" id="city"/>
+                <input type="text" name="city" id="city" required/>
 
                 <label for="postcode">Postcode:</label>
-                <input type="text" name="postcode" id="postcode"/>
+                <input type="text" name="postcode" id="postcode" required/>
 
                 <label for="bedrooms">Bedrooms:</label>
-                <input type="number" name="bedrooms" id="bedrooms" min="1" />
+                <input type="number" name="bedrooms" id="bedrooms" min="1" required/>
 
                 <label for="bathrooms">Bathrooms:</label>
-                <input type="number" name="bathrooms" id="bathrooms" min="1" />
+                <input type="number" name="bathrooms" id="bathrooms" min="1" required/>
 
                 <label for="description">Description:</label>
-                <input type="text" name="description" id="description"/>
+                <input type="text" name="description" id="description" required/>
 
                 <label for="type">Type:</label>
                 <select name="type" id="type">

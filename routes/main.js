@@ -70,7 +70,7 @@ module.exports = function (app, appData) {
         let username = req.body.username;
         let password = req.body.password;
 
-        db.query(`SELECT hashed_password FROM users WHERE username = '${username}'`, (err, result) => {
+        db.query(`SELECT id, hashed_password FROM users WHERE username = '${username}'`, (err, result) => {
             if (err) {
                 console.error(err.message);
                 res.redirect('/login');
@@ -79,8 +79,8 @@ module.exports = function (app, appData) {
                 res.render('login.ejs', Object.assign({}, appData, { error: "Invalid user" }));
             }
             else {
-                let hashedPassword = result[0].hashed_password
-                bcrypt.compare(password, hashedPassword, function (err, result) {
+                let user = result[0]
+                bcrypt.compare(password, user.hashed_password, function (err, result) {
                     if (err) {
                         console.error(err.message);
                         res.redirect('/login');
@@ -89,7 +89,7 @@ module.exports = function (app, appData) {
                         res.render('login.ejs', Object.assign({}, appData, { error: "Invalid password." }));
                     }
                     else if (result == true) {
-                        req.session.userId = username;
+                        req.session.userId = user.id;
                         res.render('login.ejs', Object.assign({}, appData, { success: "Successfully Logged in! " }));
                     }
                 })
@@ -156,7 +156,29 @@ module.exports = function (app, appData) {
         })
     })
 
-    app.get('/listproperty', redirectLogin, function (req, res) {
+    app.get('/listproperty', redirectLogin, function (req, res){
         res.render("listproperty.ejs", appData);
     });
+    app.post('/property-added', function(req,res){
+        let price = req.body.price;
+        let street = req.body.street;
+        let city = req.body.city;
+        let postcode = req.body.postcode;
+        let bedrooms = parseInt(req.body.bedrooms);
+        let bathrooms = parseInt(req.body.bathrooms);
+        let desc = req.body.description;
+        let type = req.body.type;
+
+        let sqlquery = "INSERT INTO properties (price, street, city, postcode, bedrooms, bathrooms, description, type, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        db.query(sqlquery, [price, street, city, postcode, bedrooms, bathrooms, desc, type, req.session.userId], function (err, result) {
+            if (err) {
+                console.log(req.session.userID)
+                console.error(err.message);
+                res.redirect("./"); //NEED TO REVAMP
+            } else {
+                res.render('listproperty.ejs', Object.assign({}, appData, { success: "Successfully listed property!" }));
+            }
+    });
+    })
 }
