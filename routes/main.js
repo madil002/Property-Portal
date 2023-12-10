@@ -147,10 +147,11 @@ module.exports = function (app, appData) {
                 console.error(err.message);
                 res.redirect("./"); //NEED TO REVAMP
             } else {
-                console.log("SQL Query:", sqlquery);
-                console.log("Parameters:", [type, type, city, '%' + city + '%', price, price, bedrooms, bedrooms, bathrooms, bathrooms]);
-                console.log(result);
-                res.render('properties.ejs', Object.assign({}, appData, { properties: result }));
+                if(result.length == 0){
+                    res.render('search.ejs', Object.assign({}, appData, { error: "No matching properties found" }));
+                } else {
+                    res.render('properties.ejs', Object.assign({}, appData, { properties: result }));
+                }
             }
         })
     })
