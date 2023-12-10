@@ -16,13 +16,19 @@
 
     <div class="properties-container">
         <% properties.forEach(function(property) { %>
-            <div class="property">
-                <p><strong>Price:</strong> $<%= property.price %></p>
-                <p><strong>Location:</strong> <%= property.street %>, <%= property.city %> <%= property.postcode %></p>
-                <p><strong>Type:</strong> <%= property.type %></p>
-                <p><strong>Bedrooms:</strong> <%= property.bedrooms %></p>
-                <p><strong>Bathrooms:</strong> <%= property.bathrooms %></p>
-                <p><%= property.description %></p>
+            <div class="property-container">
+                <div class="property">
+                    <p><strong>Price:</strong> $<%= property.price %></p>
+                    <p><strong>Location:</strong> <%= property.street %>, <%= property.city %> <%= property.postcode %></p>
+                    <p><strong>Type:</strong> <%= property.type %></p>
+                    <p><strong>Bedrooms:</strong> <%= property.bedrooms %></p>
+                    <p><strong>Bathrooms:</strong> <%= property.bathrooms %></p>
+                    <p><%= property.description %></p>
+                </div>
+                <div class="user-details">
+                  <p>Posted by: <%= property.username %></p>
+                  <p>Email: <%= property.email %></p>
+                </div>
             </div>
         <% }); %>
     </div>
