@@ -116,3 +116,30 @@ a:active {
     font-weight: bold;
     margin: 10px 0;
 }
+
+.properties-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.property {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    max-width: 600px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.property p {
+    margin: 5px 0;
+}
+
+.property p strong {
+    color: #333;
+    font-weight: bold;
+}
