@@ -124,4 +124,8 @@ module.exports = function(app, appData) {
             }
         })
     });
+
+    app.get('/search', function(req,res){
+        res.render("search.ejs", appData);
+    });
 }
