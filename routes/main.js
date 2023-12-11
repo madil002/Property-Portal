@@ -28,7 +28,7 @@ module.exports = function (app, appData) {
     //Need to add server side validation for the form fields
     app.post('/registered',
     [check('email').isEmail().withMessage('Invalid email format'),
-    check('username').isLength({ min: 4 }).withMessage('Username must be at least 4 characters long').matches(/^[a-zA-Z0-9]+$/).withMessage('Username must contain only alphanumeric characters'),
+    check('username').isLength({ min: 4 }).withMessage('Username must be at least 4 characters long').matches(/^[a-zA-Z0-9]+$/).withMessage('Username must contain only alphabetic characters'),
     check('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long').matches(/\d/).withMessage('Password must contain a number'),
     check('first').not().isEmpty().withMessage('First name is required'),
     check('last').not().isEmpty().withMessage('Last name is required')], function (req, res) {
@@ -77,8 +77,8 @@ module.exports = function (app, appData) {
     });
 
     app.post('/loggedin', [
-        check('username', 'Username is required').not().isEmpty(),
-        check('password', 'Password is required').not().isEmpty()], function (req, res) {
+        check('username').not().isEmpty().withMessage('Username is required'),
+        check('password').not().isEmpty().withMessage('Password is required')], function (req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             const reason = errors.array().map(err => err.msg);
@@ -149,32 +149,46 @@ module.exports = function (app, appData) {
     app.get('/search', function (req, res) {
         res.render("search.ejs", appData);
     });
-    app.get('/search-result', function (req, res) {
-        let type = req.query.type ? req.query.type : null;
-        let city = req.query.city ? req.query.city : null;
-        let price = req.query.price ? parseInt(req.query.price) : null;
-        let bedrooms = req.query.bedrooms ? parseInt(req.query.bedrooms) : null;
-        let bathrooms = req.query.bathrooms ? parseInt(req.query.bathrooms) : null;
+    app.get('/search-result', [
+        check('type').isString().withMessage('Type must be a string'),
+        check('city').matches(/^[a-zA-Z\s]+$/).withMessage('City must contain only alphabetic characters'),
+        check('price').isNumeric().withMessage('Price must be a number'),
+        check('bedrooms').isInt().withMessage('Bedrooms must be an integer'),
+        check('bathrooms').isInt().withMessage('Bathrooms must be an integer')
+    ], function (req, res) {
 
-        let sqlquery = `SELECT * FROM properties JOIN users ON properties.user_id = users.id
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const reason = errors.array().map(err => err.msg);
+            res.render('search.ejs', Object.assign({}, appData, { error: reason }));
+        } else {
+            let type = req.query.type ? req.query.type : null;
+            let city = req.query.city ? req.query.city : null;
+            let price = req.query.price ? parseInt(req.query.price) : null;
+            let bedrooms = req.query.bedrooms ? parseInt(req.query.bedrooms) : null;
+            let bathrooms = req.query.bathrooms ? parseInt(req.query.bathrooms) : null;
+
+            let sqlquery = `SELECT * FROM properties JOIN users ON properties.user_id = users.id
                     WHERE (? IS NULL OR type = ?) 
                     AND (? IS NULL OR city LIKE ?) 
                     AND (? IS NULL OR price <= ?) 
                     AND (? IS NULL OR bedrooms >= ?) 
                     AND (? IS NULL OR bathrooms >= ?)`;
 
-        db.query(sqlquery, [type, type, city, '%' + city + '%', price, price, bedrooms, bedrooms, bathrooms, bathrooms], function(err,result){
-            if (err) {
-                console.error(err.message);
-                res.redirect("./"); //NEED TO REVAMP
-            } else {
-                if(result.length == 0){
-                    res.render('search.ejs', Object.assign({}, appData, { error: "No matching properties found" }));
+            db.query(sqlquery, [type, type, city, '%' + city + '%', price, price, bedrooms, bedrooms, bathrooms, bathrooms], function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    res.redirect("./"); //NEED TO REVAMP
                 } else {
-                    res.render('properties.ejs', Object.assign({}, appData, { properties: result }));
+                    if (result.length == 0) {
+                        res.render('search.ejs', Object.assign({}, appData, { error: "No matching properties found" }));
+                    } else {
+                        res.render('properties.ejs', Object.assign({}, appData, { properties: result }));
+                    }
                 }
-            }
-        })
+            })
+        }
+
     })
 
     app.get('/listproperty', redirectLogin, function (req, res){
