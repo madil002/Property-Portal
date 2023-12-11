@@ -38,7 +38,7 @@ module.exports = function (app, appData) {
             res.render('register.ejs', Object.assign({}, appData, { error : reason }));
         }
         else {
-            const plainPassword = req.body.password;
+            const plainPassword = req.sanitize(req.body.password);
 
             let checkForDupe = "SELECT * FROM users WHERE username = ? OR email = ?";
             db.query(checkForDupe, [req.body.username, req.body.email], function (err, result) {
@@ -55,7 +55,7 @@ module.exports = function (app, appData) {
                         }
                         else {
                             let sqlquery = "INSERT INTO users (username, hashed_password, email, first_name, last_name) VALUES (?,?,?,?,?)";
-                            let newrecord = [req.body.username, hashedPassword, req.body.email, req.body.first, req.body.last];
+                            let newrecord = [req.sanitize(req.body.username), hashedPassword, req.sanitize(req.body.email), req.sanitize(req.body.first), req.sanitize(req.body.last)];
                             db.query(sqlquery, newrecord, (err, result) => {
                                 if (err) {
                                     console.error(err.message);
@@ -87,8 +87,8 @@ module.exports = function (app, appData) {
             // Need to add:
             // if logged in already redirect to dashboard
             // direct to dashboard after successful login
-            let username = req.body.username;
-            let password = req.body.password;
+            let username = req.sanitize(req.body.username);
+            let password = req.sanitize(req.body.password);
 
             db.query(`SELECT id, hashed_password FROM users WHERE username = '${username}'`, (err, result) => {
                 if (err) {
@@ -150,11 +150,11 @@ module.exports = function (app, appData) {
         res.render("search.ejs", appData);
     });
     app.get('/search-result', [
-        check('type').isString().withMessage('Type must be a string'),
-        check('city').matches(/^[a-zA-Z\s]+$/).withMessage('City must contain only alphabetic characters'),
-        check('price').isNumeric().withMessage('Price must be a number'),
-        check('bedrooms').isInt().withMessage('Bedrooms must be an integer'),
-        check('bathrooms').isInt().withMessage('Bathrooms must be an integer')
+        check('type').optional({ checkFalsy: true }).isString().withMessage('Type must be a string'),
+        check('city').optional({ checkFalsy: true }).matches(/^[a-zA-Z\s]+$/).withMessage('City must contain only alphabetic characters'),
+        check('price').optional({ checkFalsy: true }).isNumeric().withMessage('Price must be a number'),
+        check('bedrooms').optional({ checkFalsy: true }).isInt().withMessage('Bedrooms must be an integer'),
+        check('bathrooms').optional({ checkFalsy: true }).isInt().withMessage('Bathrooms must be an integer')
     ], function (req, res) {
 
         const errors = validationResult(req);
@@ -162,11 +162,11 @@ module.exports = function (app, appData) {
             const reason = errors.array().map(err => err.msg);
             res.render('search.ejs', Object.assign({}, appData, { error: reason }));
         } else {
-            let type = req.query.type ? req.query.type : null;
-            let city = req.query.city ? req.query.city : null;
-            let price = req.query.price ? parseInt(req.query.price) : null;
-            let bedrooms = req.query.bedrooms ? parseInt(req.query.bedrooms) : null;
-            let bathrooms = req.query.bathrooms ? parseInt(req.query.bathrooms) : null;
+            let type = req.sanitize(req.query.type ? req.query.type : null);
+            let city = req.sanitize(req.query.city ? req.query.city : null);
+            let price = req.sanitize(req.query.price ? parseInt(req.query.price) : null);
+            let bedrooms = req.sanitize(req.query.bedrooms ? parseInt(req.query.bedrooms) : null);
+            let bathrooms = req.sanitize(req.query.bathrooms ? parseInt(req.query.bathrooms) : null);
 
             let sqlquery = `SELECT * FROM properties JOIN users ON properties.user_id = users.id
                     WHERE (? IS NULL OR type = ?) 
