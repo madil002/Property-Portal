@@ -134,7 +134,7 @@ module.exports = function (app, appData) {
     });
 
     app.get('/properties', function (req, res) {
-        let sqlquery = "SELECT * from properties JOIN users ON properties.user_id = users.id";
+        let sqlquery = "SELECT * FROM property_user_view";
 
         db.query(sqlquery, function (err, result) {
             if (err) {
@@ -162,20 +162,15 @@ module.exports = function (app, appData) {
             const reason = errors.array().map(err => err.msg);
             res.render('search.ejs', Object.assign({}, appData, { error: reason }));
         } else {
-            let type = req.sanitize(req.query.type ? req.query.type : null);
-            let city = req.sanitize(req.query.city ? req.query.city : null);
-            let price = req.sanitize(req.query.price ? parseInt(req.query.price) : null);
-            let bedrooms = req.sanitize(req.query.bedrooms ? parseInt(req.query.bedrooms) : null);
-            let bathrooms = req.sanitize(req.query.bathrooms ? parseInt(req.query.bathrooms) : null);
+            let type = req.query.type ? req.sanitize(req.query.type) : null;
+            let city = req.query.city ? req.sanitize(req.query.city) : null;
+            let price = req.query.price ? parseInt(req.sanitize(req.query.price)) : null;
+            let bedrooms = req.query.bedrooms ? parseInt(req.sanitize(req.query.bedrooms)) : null;
+            let bathrooms = req.query.bathrooms ? parseInt(req.sanitize(req.query.bathrooms)) : null;
 
-            let sqlquery = `SELECT * FROM properties JOIN users ON properties.user_id = users.id
-                    WHERE (? IS NULL OR type = ?) 
-                    AND (? IS NULL OR city LIKE ?) 
-                    AND (? IS NULL OR price <= ?) 
-                    AND (? IS NULL OR bedrooms >= ?) 
-                    AND (? IS NULL OR bathrooms >= ?)`;
+            let sqlquery = "CALL SearchProperties(?, ?, ?, ?, ?)";
 
-            db.query(sqlquery, [type, type, city, '%' + city + '%', price, price, bedrooms, bedrooms, bathrooms, bathrooms], function (err, result) {
+            db.query(sqlquery, [type, city, price, bedrooms , bathrooms], function (err, result) {
                 if (err) {
                     console.error(err.message);
                     res.redirect("./"); //NEED TO REVAMP
@@ -183,7 +178,7 @@ module.exports = function (app, appData) {
                     if (result.length == 0) {
                         res.render('search.ejs', Object.assign({}, appData, { error: "No matching properties found" }));
                     } else {
-                        res.render('properties.ejs', Object.assign({}, appData, { properties: result }));
+                        res.render('properties.ejs', Object.assign({}, appData, { properties: result[0] }));
                     }
                 }
             })
@@ -231,7 +226,7 @@ module.exports = function (app, appData) {
         }
     });
     app.get('/api', function(req,res){
-        let sqlquery = `SELECT * FROM properties JOIN users ON properties.user_id = users.id`
+        let sqlquery = `SELECT * FROM property_user_view`
 
         db.query(sqlquery, (err, result) => {
             if (err) {

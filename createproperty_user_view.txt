@@ -1,0 +1,18 @@
+CREATE VIEW property_user_view AS
+SELECT 
+    properties.id AS property_id, 
+    users.id AS user_id, 
+    properties.price, 
+    properties.street, 
+    properties.city, 
+    properties.postcode, 
+    properties.bedrooms, 
+    properties.bathrooms, 
+    properties.description, 
+    properties.type,
+    users.username,
+    users.first_name,
+    users.last_name,
+    users.email
+FROM properties 
+JOIN users ON properties.user_id = users.id;

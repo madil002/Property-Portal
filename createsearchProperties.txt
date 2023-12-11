@@ -1,0 +1,12 @@
+DELIMITER //
+CREATE PROCEDURE searchProperties(IN p_type VARCHAR(255), IN p_city VARCHAR(255), IN p_price INT, IN p_bedrooms INT, IN p_bathrooms INT)
+BEGIN
+    SELECT * FROM properties 
+    JOIN users ON properties.user_id = users.id
+    WHERE (p_type IS NULL OR properties.type = p_type) 
+    AND (p_city IS NULL OR properties.city LIKE CONCAT('%', p_city, '%')) 
+    AND (p_price IS NULL OR properties.price <= p_price) 
+    AND (p_bedrooms IS NULL OR properties.bedrooms >= p_bedrooms) 
+    AND (p_bathrooms IS NULL OR properties.bathrooms >= p_bathrooms);
+END //
+DELIMITER ;
