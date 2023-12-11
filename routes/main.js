@@ -180,26 +180,41 @@ module.exports = function (app, appData) {
     app.get('/listproperty', redirectLogin, function (req, res){
         res.render("listproperty.ejs", appData);
     });
-    app.post('/property-added', function(req,res){
-        let price = req.body.price;
-        let street = req.body.street;
-        let city = req.body.city;
-        let postcode = req.body.postcode;
-        let bedrooms = parseInt(req.body.bedrooms);
-        let bathrooms = parseInt(req.body.bathrooms);
-        let desc = req.body.description;
-        let type = req.body.type;
+    app.post('/property-added', [
+        check('price').isNumeric().withMessage('Price must be a number'),
+        check('street').not().isEmpty().withMessage('Street is required'),
+        check('city').not().isEmpty().withMessage('City is required'),
+        check('postcode').matches(/^[0-9a-zA-Z]+$/).withMessage('Invalid postcode format'),
+        check('bedrooms').isInt().withMessage('Bedrooms must be an integer'),
+        check('bathrooms').isInt().withMessage('Bathrooms must be an integer'),
+        check('description').not().isEmpty().withMessage('Description is required'),
+        check('type').not().isEmpty().withMessage('Type is required')
+    ], function (req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const reason = errors.array().map(err => err.msg);
+            res.render('listproperty.ejs', Object.assign({}, appData, { error : reason }));
+        } else {
+            let price = req.body.price;
+            let street = req.body.street;
+            let city = req.body.city;
+            let postcode = req.body.postcode;
+            let bedrooms = parseInt(req.body.bedrooms);
+            let bathrooms = parseInt(req.body.bathrooms);
+            let desc = req.body.description;
+            let type = req.body.type;
 
-        let sqlquery = "INSERT INTO properties (price, street, city, postcode, bedrooms, bathrooms, description, type, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            let sqlquery = "INSERT INTO properties (price, street, city, postcode, bedrooms, bathrooms, description, type, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        db.query(sqlquery, [price, street, city, postcode, bedrooms, bathrooms, desc, type, req.session.userId], function (err, result) {
-            if (err) {
-                console.error(err.message);
-                res.redirect("./"); //NEED TO REVAMP
-            } else {
-                res.render('listproperty.ejs', Object.assign({}, appData, { success: "Successfully listed property!" }));
-            }
-        });
+            db.query(sqlquery, [price, street, city, postcode, bedrooms, bathrooms, desc, type, req.session.userId], function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    res.redirect("./"); //NEED TO REVAMP
+                } else {
+                    res.render('listproperty.ejs', Object.assign({}, appData, { success: "Successfully listed property!" }));
+                }
+            });
+        }
     });
     app.get('/api', function(req,res){
         let sqlquery = `SELECT * FROM properties JOIN users ON properties.user_id = users.id`
