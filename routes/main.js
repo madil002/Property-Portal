@@ -175,7 +175,7 @@ module.exports = function (app, appData) {
                     console.error(err.message);
                     res.redirect("./"); //NEED TO REVAMP
                 } else {
-                    if (result.length == 0) {
+                    if (result[0].length == 0) {
                         res.render('search.ejs', Object.assign({}, appData, { error: "No matching properties found" }));
                     } else {
                         res.render('properties.ejs', Object.assign({}, appData, { properties: result[0] }));
@@ -213,8 +213,7 @@ module.exports = function (app, appData) {
             let desc = req.sanitize(req.body.description);
             let type = req.sanitize(req.body.type);
 
-            let sqlquery = "INSERT INTO properties (price, street, city, postcode, bedrooms, bathrooms, description, type, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+            let sqlquery = "CALL AddProperty(?, ?, ?, ?, ?, ?, ?, ?, ?)";
             db.query(sqlquery, [price, street, city, postcode, bedrooms, bathrooms, desc, type, req.session.userId], function (err, result) {
                 if (err) {
                     console.error(err.message);
