@@ -173,7 +173,6 @@ module.exports = function (app, appData) {
 
         db.query(sqlquery, [price, street, city, postcode, bedrooms, bathrooms, desc, type, req.session.userId], function (err, result) {
             if (err) {
-                console.log(req.session.userID)
                 console.error(err.message);
                 res.redirect("./"); //NEED TO REVAMP
             } else {
