@@ -209,14 +209,14 @@ module.exports = function (app, appData) {
             const reason = errors.array().map(err => err.msg);
             res.render('listproperty.ejs', Object.assign({}, appData, { error : reason }));
         } else {
-            let price = req.body.price;
-            let street = req.body.street;
-            let city = req.body.city;
-            let postcode = req.body.postcode;
-            let bedrooms = parseInt(req.body.bedrooms);
-            let bathrooms = parseInt(req.body.bathrooms);
-            let desc = req.body.description;
-            let type = req.body.type;
+            let price = req.sanitize(req.body.price);
+            let street = req.sanitize(req.body.street);
+            let city = req.sanitize(req.body.city);
+            let postcode = req.sanitize(req.body.postcode);
+            let bedrooms = req.sanitize(parseInt(req.body.bedrooms));
+            let bathrooms = req.sanitize(parseInt(req.body.bathrooms));
+            let desc = req.sanitize(req.body.description);
+            let type = req.sanitize(req.body.type);
 
             let sqlquery = "INSERT INTO properties (price, street, city, postcode, bedrooms, bathrooms, description, type, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
