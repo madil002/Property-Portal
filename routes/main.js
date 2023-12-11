@@ -76,38 +76,46 @@ module.exports = function (app, appData) {
         res.render('login.ejs', appData)
     });
 
-    app.post('/loggedin', function (req, res) {
-        // Need to add:
-        // if logged in already redirect to dashboard
-        // direct to dashboard after successful login
-        let username = req.body.username;
-        let password = req.body.password;
+    app.post('/loggedin', [
+        check('username', 'Username is required').not().isEmpty(),
+        check('password', 'Password is required').not().isEmpty()], function (req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const reason = errors.array().map(err => err.msg);
+            res.render('login.ejs', Object.assign({}, appData, { error : reason }));
+        } else {
+            // Need to add:
+            // if logged in already redirect to dashboard
+            // direct to dashboard after successful login
+            let username = req.body.username;
+            let password = req.body.password;
 
-        db.query(`SELECT id, hashed_password FROM users WHERE username = '${username}'`, (err, result) => {
-            if (err) {
-                console.error(err.message);
-                res.redirect('/login');
-            }
-            else if (result.length == 0) {
-                res.render('login.ejs', Object.assign({}, appData, { error: "Invalid user" }));
-            }
-            else {
-                let user = result[0]
-                bcrypt.compare(password, user.hashed_password, function (err, result) {
-                    if (err) {
-                        console.error(err.message);
-                        res.redirect('/login');
-                    }
-                    else if (result == false) {
-                        res.render('login.ejs', Object.assign({}, appData, { error: "Invalid password." }));
-                    }
-                    else if (result == true) {
-                        req.session.userId = user.id;
-                        res.render('login.ejs', Object.assign({}, appData, { success: "Successfully Logged in! " }));
-                    }
-                })
-            }
-        })
+            db.query(`SELECT id, hashed_password FROM users WHERE username = '${username}'`, (err, result) => {
+                if (err) {
+                    console.error(err.message);
+                    res.redirect('/login');
+                }
+                else if (result.length == 0) {
+                    res.render('login.ejs', Object.assign({}, appData, { error: "Invalid user" }));
+                }
+                else {
+                    let user = result[0]
+                    bcrypt.compare(password, user.hashed_password, function (err, result) {
+                        if (err) {
+                            console.error(err.message);
+                            res.redirect('/login');
+                        }
+                        else if (result == false) {
+                            res.render('login.ejs', Object.assign({}, appData, { error: "Invalid password." }));
+                        }
+                        else if (result == true) {
+                            req.session.userId = user.id;
+                            res.render('login.ejs', Object.assign({}, appData, { success: "Successfully Logged in! " }));
+                        }
+                    })
+                }
+            })
+        }
     })
 
     app.get('/loggedout', redirectLogin, function (req, res) {
