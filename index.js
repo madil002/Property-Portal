@@ -5,6 +5,7 @@ var bodyParser= require ('body-parser')
 const mysql = require('mysql')
 var session = require ('express-session')
 var validator = require ('express-validator')
+const expressSanitizer = require('express-sanitizer');
 
 // Create the express application object
 const app = express()
@@ -23,6 +24,9 @@ app.use(session({
         expires: 600000
     }
 }));
+
+// Create an input sanitizer
+app.use(expressSanitizer());
 
 // Set the directory where Express will pick up HTML files
 // __dirname will get the current directory
