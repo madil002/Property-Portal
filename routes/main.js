@@ -178,6 +178,17 @@ module.exports = function (app, appData) {
             } else {
                 res.render('listproperty.ejs', Object.assign({}, appData, { success: "Successfully listed property!" }));
             }
+        });
     });
+    app.get('/api', function(req,res){
+        let sqlquery = `SELECT * FROM properties JOIN users ON properties.user_id = users.id`
+
+        db.query(sqlquery, (err, result) => {
+            if (err) {
+                res.redirect('./');
+            }
+            res.json(result); 
+        });
+
     })
 }
