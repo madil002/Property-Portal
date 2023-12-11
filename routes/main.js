@@ -235,4 +235,39 @@ module.exports = function (app, appData) {
         });
 
     })
+    app.get('/more-properties', function(req,res){
+        const request = require('request');
+        let url = `https://api.bridgedataoutput.com/api/v2/test/listings?access_token=6baca547742c6f96a6ff71b138424f21`;
+        
+        request(url, function(err, response, body){
+            if (err) {
+                console.log('error:', error);
+                res.redirect('./');
+            } else {
+                try {
+                    var propertiesData = JSON.parse(body);
+                    if (propertiesData && propertiesData.bundle) {
+                        var properties = propertiesData.bundle.map(p => ({
+                            price: p.ListPrice,
+                            street: p.StreetAddress,
+                            city: p.City,
+                            postcode: p.PostalCode,
+                            type: p.PropertyType,
+                            bedrooms: p.BedroomsTotal,
+                            bathrooms: p.BathroomsTotalInteger,
+                            description: p.PublicRemarks,
+                            first_name: 'N/A', // Placeholder
+                            email: 'N/A' // Placeholder
+                        }));
+                        res.render('properties.ejs', { appName: 'More Properties', properties: properties });
+                    } else {
+                        res.render('properties.ejs', { appName: 'More Properties', properties: [] });
+                    }
+                } catch (parseError) {
+                    console.error('Error:', parseError);
+                    res.redirect('./');
+                }
+            }
+        })
+    })
 }
