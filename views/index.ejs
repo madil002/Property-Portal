@@ -12,6 +12,14 @@
     <h1>
         <%=appName%>
     </h1>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+        <p class="error-message"><%= error %></p>
+    <% } %>
+    <% if (typeof success !== 'undefined' && success) { %>
+        <p class="success-message"><%= success %></p>
+    <% } %>
+    
     <p><a href="properties">Our Properties</a></p>
     <p><a href="search">Search Properties</a></p>
     <p><a href="listproperty">List a Property</a></p>

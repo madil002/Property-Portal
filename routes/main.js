@@ -22,7 +22,11 @@ module.exports = function (app, appData) {
     });
 
     app.get('/register', function (req, res) {
+        if (req.session.userId){
+            res.render('index.ejs', Object.assign({}, appData, { error: "You are already logged in!" }));
+        } else {
         res.render('register.ejs', appData)
+        }
     });
 
     //Need to add server side validation for the form fields
@@ -73,7 +77,11 @@ module.exports = function (app, appData) {
     });
 
     app.get('/login', function (req, res) {
+        if (req.session.userId){
+            res.render('index.ejs', Object.assign({}, appData, { error: "You are already logged in!" }));
+        } else {
         res.render('login.ejs', appData)
+        }
     });
 
     app.post('/loggedin', [
@@ -123,8 +131,7 @@ module.exports = function (app, appData) {
             if (err) {
                 return res.redirect('./')
             }
-            // Need to revamp this
-            res.send('you are now logged out. <a href=' + './' + '>Home</a>');
+            res.render('index.ejs', Object.assign({}, appData, { success: "Successfully logged out!" }));
         })
 
     })

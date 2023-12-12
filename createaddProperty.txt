@@ -1,0 +1,17 @@
+DELIMITER //
+CREATE PROCEDURE addProperty(
+    IN p_price DECIMAL(10,2),
+    IN p_street VARCHAR(255),
+    IN p_city VARCHAR(100),
+    IN p_postcode VARCHAR(20),
+    IN p_bedrooms INT,
+    IN p_bathrooms INT,
+    IN p_description TEXT,
+    IN p_type VARCHAR(50),
+    IN p_user_id INT
+)
+BEGIN
+    INSERT INTO properties (price, street, city, postcode, bedrooms, bathrooms, description, type, user_id)
+    VALUES (p_price, p_street, p_city, p_postcode, p_bedrooms, p_bathrooms, p_description, p_type, p_user_id);
+END //
+DELIMITER ;
