@@ -12,7 +12,11 @@
     <h1>
         <%=appName%>
     </h1>
-    <h3>A list of properties:</h3>
+    <% if (showDelete) { %>
+        <h3>A list of your properties currently listed:</h3>
+    <% } else { %>
+        <h3>A list of properties:</h3>
+    <% } %>
 
     <div class="properties-container">
         <% properties.forEach(function(property) { %>
@@ -24,11 +28,23 @@
                     <p><strong>Bedrooms:</strong> <%= property.bedrooms %></p>
                     <p><strong>Bathrooms:</strong> <%= property.bathrooms %></p>
                     <p><%= property.description %></p>
+
+                    <% if (showDelete) { %>
+                        <form method="POST" action="/delete-property">
+                            <input type="hidden" name="propertyId" value="<%= property.id %>" />
+                            <input type="submit" value="Delete" class="delete-button" />
+                        </form>
+                    <% } %>
+
                 </div>
+                <% if (showContactDetails) { %>
                 <div class="user-details">
-                  <p><strong>Name:</strong> <%= property.first_name %>, <%= property.first_name %></p>
-                  <p><strong>Email:</strong> <%= property.email %></p>
+                    <p><strong>Contact agent:</strong></p>
+                     <p><strong>Name:</strong> <%= property.first_name %>, <%= property.first_name %></p>
+                     <p><strong>Email:</strong> <%= property.email %></p>
+                    
                 </div>
+                <% } %>
             </div>
         <% }); %>
     </div>

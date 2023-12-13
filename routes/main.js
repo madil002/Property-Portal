@@ -6,7 +6,7 @@ module.exports = function (app, appData) {
 
     const redirectLogin = (req, res, next) => {
         if (!req.session.userId) {
-            res.redirect('/login')
+            res.redirect('./login')
         } else {
             next();
         }
@@ -92,9 +92,6 @@ module.exports = function (app, appData) {
             const reason = errors.array().map(err => err.msg);
             res.render('login.ejs', Object.assign({}, appData, { error : reason }));
         } else {
-            // Need to add:
-            // if logged in already redirect to dashboard
-            // direct to dashboard after successful login
             let username = req.sanitize(req.body.username);
             let password = req.sanitize(req.body.password);
 
@@ -118,7 +115,7 @@ module.exports = function (app, appData) {
                         }
                         else if (result == true) {
                             req.session.userId = user.id;
-                            res.render('login.ejs', Object.assign({}, appData, { success: "Successfully Logged in! " }));
+                            res.render('index.ejs', Object.assign({}, appData, { success: "Successfully Logged in! " }));
                         }
                     })
                 }
@@ -137,8 +134,27 @@ module.exports = function (app, appData) {
     })
 
     app.get('/dashboard', redirectLogin, function (req, res) {
-        res.send("Placeholder");
+        let sqlquery = "SELECT * FROM properties WHERE user_id = ?";
+        db.query(sqlquery, [req.session.userId], function(err, results) {
+            if (err) {
+                console.error(err.message);
+                res.redirect('./');
+            } else {
+                res.render('properties.ejs', Object.assign({}, appData, { properties: results, showDelete : true, showContactDetails : false }));
+            }
+        })
     });
+    app.post('/delete-property', function(req, res){
+        let propertyID = req.body.propertyId;
+        let sqlquery = "DELETE FROM properties WHERE id = ? AND user_id = ?";
+        db.query(sqlquery, [propertyID, req.session.userId], function(err, result) {
+            if (err) {
+                console.error(err.message);
+                res.redirect('./')
+            }
+            res.redirect('/dashboard');
+        });
+    })
 
     app.get('/properties', function (req, res) {
         let sqlquery = "SELECT * FROM property_user_view";
@@ -148,7 +164,7 @@ module.exports = function (app, appData) {
                 console.error(err.message);
                 res.redirect("./"); //NEED TO REVAMP
             } else {
-                res.render('properties.ejs', Object.assign({}, appData, { properties: result }));
+                res.render('properties.ejs', Object.assign({}, appData, { properties: result, showDelete : false, showContactDetails : true }));
             }
         })
     });
@@ -185,7 +201,7 @@ module.exports = function (app, appData) {
                     if (result[0].length == 0) {
                         res.render('search.ejs', Object.assign({}, appData, { error: "No matching properties found" }));
                     } else {
-                        res.render('properties.ejs', Object.assign({}, appData, { properties: result[0] }));
+                        res.render('properties.ejs', Object.assign({}, appData, { properties: result[0], showDelete : false, showContactDetails : true }));
                     }
                 }
             })
@@ -266,9 +282,9 @@ module.exports = function (app, appData) {
                             first_name: 'N/A', // Placeholder
                             email: 'N/A' // Placeholder
                         }));
-                        res.render('properties.ejs', { appName: 'More Properties', properties: properties });
+                        res.render('properties.ejs', { appName: 'More Properties', properties: properties, showDelete : false, showContactDetails : false });
                     } else {
-                        res.render('properties.ejs', { appName: 'More Properties', properties: [] });
+                        res.render('properties.ejs', { appName: 'More Properties', properties: [], showDelete : false, showContactDetails : false });
                     }
                 } catch (parseError) {
                     console.error('Error:', parseError);
