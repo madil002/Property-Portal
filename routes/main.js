@@ -152,7 +152,7 @@ module.exports = function (app, appData) {
                 console.error(err.message);
                 res.redirect('./')
             }
-            res.redirect('/dashboard');
+            res.redirect('./dashboard');
         });
     })
 
