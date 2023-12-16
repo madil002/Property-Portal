@@ -258,6 +258,29 @@ module.exports = function (app, appData) {
         });
 
     })
+    app.get('/inquire', redirectLogin, function (req, res) {
+        const propertyId = req.query.propertyId;
+        res.render('inquire.ejs', Object.assign({}, appData, { propertyId: propertyId }));
+    });
+    app.post('/send-inquiry', function (req, res) {
+        const propertyId = req.body.propertyId;
+        const message = req.body.message;
+        const userId = req.session.userId;
+    
+        if (!userId) {
+            res.render('index.ejs', Object.assign({}, appData, { error: "Not Logged in!" }));
+        } else {
+            let sqlquery = "INSERT INTO inquiries (property_id, user_id, message) VALUES (?, ?, ?)";
+            db.query(sqlquery, [propertyId, userId, message], (err, queryRes) => {
+                if (err) {
+                    console.error(err.message);
+                    res.redirect('./');
+                } else {
+                    res.render('index.ejs', Object.assign({}, appData, { success: "Successfully sent inquiry!" }));
+                }
+            });
+        }
+    });
     app.get('/more-properties', function(req,res){
         const request = require('request');
         let url = `https://api.bridgedataoutput.com/api/v2/test/listings?access_token=6baca547742c6f96a6ff71b138424f21`;

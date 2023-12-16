@@ -42,7 +42,10 @@
                     <p><strong>Contact agent:</strong></p>
                      <p><strong>Name:</strong> <%= property.first_name %>, <%= property.last_name %></p>
                      <p><strong>Email:</strong> <%= property.email %></p>
-                    
+                     <form method="GET" action="/inquire">
+                        <input type="hidden" name="propertyId" value="<%= property.property_id %>" />
+                        <input type="submit" value="Inquire" class="delete-button" />
+                    </form>
                 </div>
                 <% } %>
             </div>
