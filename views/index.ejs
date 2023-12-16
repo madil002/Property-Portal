@@ -12,23 +12,26 @@
     <h1>
         <%=appName%>
     </h1>
-
-    <% if (typeof error !== 'undefined' && error) { %>
-        <p class="error-message"><%= error %></p>
-    <% } %>
-    <% if (typeof success !== 'undefined' && success) { %>
-        <p class="success-message"><%= success %></p>
-    <% } %>
-    
-    <p><a href="properties">Our Properties</a></p>
-    <p><a href="search">Search Properties</a></p>
-    <p><a href="listproperty">List a Property</a></p>
-    <p><a href="more-properties">More external Properties</a></p>
-    <p><a href="login">Login</a></p>
-    <p><a href="register">Register</a></p>
-    <p><a href="loggedout">Logout</a></p>
-    <p><a href="dashboard">Dashboard</a></p>
-    <p><a href="about">About <%=appName%></a></p>
+    <div class="content-container">
+        <% if (typeof error !== 'undefined' && error) { %>
+            <p class="error-message"><%= error %></p>
+        <% } %>
+        <% if (typeof success !== 'undefined' && success) { %>
+            <p class="success-message"><%= success %></p>
+        <% } %>
+        
+        <div class="home-container">
+            <p><a href="properties" class="home-link">Our Properties</a></p>
+            <p><a href="search" class="home-link">Search Properties</a></p>
+            <p><a href="listproperty" class="home-link">List a Property</a></p>
+            <p><a href="more-properties" class="home-link">More external Properties</a></p>
+            <p><a href="dashboard" class="home-link">Dashboard</a></p>
+            <p><a href="about" class="home-link">About <%=appName%></a></p>
+            <p><a href="login" class="home-link">Login</a></p>
+            <p><a href="register" class="home-link">Register</a></p>
+            <p><a href="loggedout" class="home-link">Logout</a></p>
+        </div>
+    </div>
 </body>
 
 </html>
