@@ -132,7 +132,7 @@ module.exports = function (app, appData) {
         })
 
     })
-    
+
     app.get('/dashboard', redirectLogin, function(req,res){
         let sqlquery = "SELECT * FROM properties WHERE user_id = ?";
         db.query(sqlquery, [req.session.userId], function(err, propresults) {
@@ -288,11 +288,13 @@ module.exports = function (app, appData) {
     });
     app.post('/send-inquiry', function (req, res) {
         const propertyId = req.body.propertyId;
-        const message = req.body.message;
-        const userId = req.session.userId;
+        const message = req.sanitize(req.body.message);
+        const userId = req.sanitize(req.session.userId);
     
         if (!userId) {
             res.render('index.ejs', Object.assign({}, appData, { error: "Not Logged in!" }));
+        } else if (!message || message.trim() === '') {
+            res.render('index.ejs', Object.assign({}, appData, { error: "Message cannot be empty!" }));
         } else {
             let sqlquery = "INSERT INTO inquiries (property_id, sender_user_id, message) VALUES (?, ?, ?)";
             db.query(sqlquery, [propertyId, userId, message], (err, result) => {
