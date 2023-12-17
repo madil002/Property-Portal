@@ -1,0 +1,13 @@
+CREATE VIEW inquiries_details_view AS
+SELECT 
+    inquiries.*, 
+    users.first_name, 
+    users.last_name, 
+    users.email, 
+    properties.street, 
+    properties.city, 
+    properties.postcode,
+    properties.user_id
+FROM inquiries
+INNER JOIN users ON inquiries.sender_user_id = users.id
+INNER JOIN properties ON inquiries.property_id = properties.id;

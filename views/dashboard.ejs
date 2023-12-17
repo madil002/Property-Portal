@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+    <h1 class="app-name">
+        <%=appName%>
+    </h1>
+    <div class="content-container">
+        <div class="properties-container">
+            <h3>Your Listed Properties:</h3>
+            <% if (properties.length > 0) { %>
+                <% properties.forEach(function(property) { %>
+                    <div class="property-container">
+                        <div class="property">
+                            <p><strong>Price:</strong> £<%= property.price %></p>
+                            <p><strong>Location:</strong> <%= property.street %>, <%= property.city %> <%= property.postcode %></p>
+                            <p><strong>Type:</strong> <%= property.type %></p>
+                            <p><strong>Bedrooms:</strong> <%= property.bedrooms %></p>
+                            <p><strong>Bathrooms:</strong> <%= property.bathrooms %></p>
+                            <p><%= property.description %></p>
+
+                            <% if (showDelete) { %>
+                                <form method="POST" action="/delete-property">
+                                    <input type="hidden" name="propertyId" value="<%= property.id %>" />
+                                    <input type="submit" value="Delete" class="delete-button" />
+                                </form>
+                            <% } %>
+
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p class="no-properties">You haven't listed any properties yet.</p>
+            <% } %>
+        </div>
+        
+        <div class="properties-container">
+            <h3>Inquiries Regarding Your Properties:</h3>
+            <% if (inquiries.length > 0) { %>
+                <% inquiries.forEach(function(inquiry) { %>
+                    <div class="property-container">
+                        <div class="property">
+                            <p><strong>Location:</strong> <%= inquiry.street %>, <%= inquiry.city %> <%= inquiry.postcode %></p>
+                            <p><strong>Inquirer's Name:</strong> <%= inquiry.first_name %> <%= inquiry.last_name %></p>
+                            <p><strong>Inquirer's Email:</strong> <%= inquiry.email %></p>
+                            <p><strong>Message:</strong> <%= inquiry.message %></p>
+                            <p><strong>Created At:</strong> <%= inquiry.created_at %></p>
+
+                            <% if (showDelete) { %>
+                                <form method="POST" action="/delete-inquiry">
+                                    <input type="hidden" name="inquiryId" value="<%= inquiry.id %>" />
+                                    <input type="submit" value="Delete" class="delete-button" />
+                                </form>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p class="no-inquiries">No inquiries have been made regarding your properties.</p>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="link-container">
+        <a href="/">Back to Homepage</a>
+    </div>
+
+</body>
+</html>

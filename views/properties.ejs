@@ -29,13 +29,6 @@
                     <p><strong>Bathrooms:</strong> <%= property.bathrooms %></p>
                     <p><%= property.description %></p>
 
-                    <% if (showDelete) { %>
-                        <form method="POST" action="/delete-property">
-                            <input type="hidden" name="propertyId" value="<%= property.id %>" />
-                            <input type="submit" value="Delete" class="delete-button" />
-                        </form>
-                    <% } %>
-
                 </div>
                 <% if (showContactDetails) { %>
                 <div class="user-details">
