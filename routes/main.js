@@ -132,18 +132,42 @@ module.exports = function (app, appData) {
         })
 
     })
-
-    app.get('/dashboard', redirectLogin, function (req, res) {
+    
+    app.get('/dashboard', redirectLogin, function(req,res){
         let sqlquery = "SELECT * FROM properties WHERE user_id = ?";
-        db.query(sqlquery, [req.session.userId], function(err, results) {
+        db.query(sqlquery, [req.session.userId], function(err, propresults) {
             if (err) {
                 console.error(err.message);
                 res.redirect('./');
             } else {
-                res.render('properties.ejs', Object.assign({}, appData, { properties: results, showDelete : true, showContactDetails : false }));
+                let inqsqlquery = `SELECT * FROM inquiries_details_view WHERE user_id = ?;`;
+                db.query(inqsqlquery, [req.session.userId], function(err, inqresults){
+                    if (err) {
+                        console.error(err.message);
+                        res.redirect('./');
+                    } else {
+                        res.render('dashboard.ejs', Object.assign({}, appData, { 
+                            properties: propresults, 
+                            inquiries: inqresults,
+                            showDelete: true, 
+                            showContactDetails: false 
+                        }));
+                    }
+                })
             }
         })
-    });
+    })
+    app.post('/delete-inquiry', function(req,res){
+        let inquiryId = req.body.inquiryId;
+        let sqlquery = "DELETE FROM inquiries WHERE id = ?";
+        db.query(sqlquery, [inquiryId], function(err,result){
+            if (err) {
+                console.error(err.message);
+                res.redirect('./')
+            }
+            res.redirect('./dashboard')
+        })
+    })
     app.post('/delete-property', function(req, res){
         let propertyID = req.body.propertyId;
         let sqlquery = "DELETE FROM properties WHERE id = ? AND user_id = ?";
@@ -270,8 +294,8 @@ module.exports = function (app, appData) {
         if (!userId) {
             res.render('index.ejs', Object.assign({}, appData, { error: "Not Logged in!" }));
         } else {
-            let sqlquery = "INSERT INTO inquiries (property_id, user_id, message) VALUES (?, ?, ?)";
-            db.query(sqlquery, [propertyId, userId, message], (err, queryRes) => {
+            let sqlquery = "INSERT INTO inquiries (property_id, sender_user_id, message) VALUES (?, ?, ?)";
+            db.query(sqlquery, [propertyId, userId, message], (err, result) => {
                 if (err) {
                     console.error(err.message);
                     res.redirect('./');
